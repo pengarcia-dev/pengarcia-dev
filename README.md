@@ -1,4 +1,4 @@
-## Hi there 👋
+## Este proyecto corresponde a la programación de un potenciostato. 
 
 <!--
 **pengarcia-dev/pengarcia-dev** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.

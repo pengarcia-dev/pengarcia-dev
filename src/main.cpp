@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+// HAGO UN COMMIT PARA VER COMO FUNCIONA
+
 bool dac_set = false; // Variable para controlar si el DAC ya ha sido configurado
 float contraelectrodo = .0;
 float dac_value = 0;

@@ -1,7 +1,7 @@
 ## Presentation
-Hello, my name is Pablo. I'm from Cordoba, Spain and I create those repositories because I want to learn Git and GitHub. As I am electronic engineer and I focus on Firmware programmation, I think this repository will be important, because I understand how version control runs and I have a control about my projects.
+Hello, my name is Pablo. I'm from Cordoba, Spain and I create these repositories because I want to learn Git and GitHub. As I am electronic engineer and I focus on Firmware programming, I believe this repository will be useful for me. It helps me understand how version control works and allows me to better manage my projects.
 
-Thank you for read me and have a nice day!!!!
+Thank you for reading, and have a great day!
 
 
 <!--

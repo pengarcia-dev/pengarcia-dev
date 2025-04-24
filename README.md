@@ -1,4 +1,8 @@
-## Este proyecto corresponde a la programación de un potenciostato. 
+## Presentation
+Hello, my name is Pablo. I'm from Cordoba, Spain and I create those repositories because I want to learn Git and GitHub. As I am electronic engineer and I focus on Firmware programmation, I think this repository will be important, because I understand how version control runs and I have a control about my projects.
+
+Thank you for read me and have a nice day!!!!
+
 
 <!--
 **pengarcia-dev/pengarcia-dev** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.

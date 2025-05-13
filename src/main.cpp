@@ -69,7 +69,7 @@ void loop() {
         Serial.println("Switch abierto");
         digitalWrite(PIN_SWITCH, LOW);
       } else if (comando == 'l') {
-        Serial.printf("Voltaje en CE: %d mV\n", analogRead(PIN_CE_VOLTAGE) * 3300 / 4095);
+        Serial.printf("Voltaje en CE: %d mV\n", analogRead(PIN_CE_VOLTAGE) * 3300 / 4095 * 633/502 * 636/646);
       }
       
     }

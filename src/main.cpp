@@ -1,69 +1,77 @@
 #include <Arduino.h>
 
-// HAGO UN COMMIT PARA VER COMO FUNCIONA
+#define PIN_DAC DAC1
+#define PIN_SWITCH 21
+#define PIN_CE_VOLTAGE 33
 
-bool dac_set = false; // Variable para controlar si el DAC ya ha sido configurado
-float contraelectrodo = .0;
-float dac_value = 0;
-float valor_pila = 0;
-#define SWITCH_PIN 17
-#define ADC_POST_SWITCH A7
-
-float leerVoltajePromediado(int pin, int numLecturas)
-{
-  float suma = 0;
-  for (int i = 0; i < numLecturas; i++)
-  {
-    suma += analogReadMilliVolts(pin) / 1000.0; // Leer en mV y convertir a V
-    delay(10);                                  // Pequeño retraso para evitar lecturas seguidas con ruido
-  }
-  return suma / numLecturas;
-}
-
-void setup()
-{
+void setup() {
   Serial.begin(115200);
-  pinMode(SWITCH_PIN, OUTPUT);
-  // Configurar resolución del ADC a 12 bits (0-4095)
-  analogReadResolution(12);
-  analogSetAttenuation(ADC_11db); // Permite medir hasta 3.3V sin recortes
-
-  // Preguntar si se ha desconectado el interruptor
-  Serial.println("Potenciostato");
-  Serial.println("Escribe abrir o cerrar el interruptor");
+  pinMode(PIN_SWITCH, OUTPUT);
+  Serial.println("Introduce un valor en mV (0-3300), opcionalmente seguido de 'c' o 'a'.");
+  Serial.println("Ejemplos: 1500 → ajusta DAC | a → abre switch | 1200b → ajusta DAC y cierra switch");
 }
 
-void loop()
-{
-  while (!Serial.available())
+void loop() {
+  if (Serial.available()) {
+    String input = Serial.readStringUntil('\n');
+    input.trim();
 
-    ; // Esperar entrada del usuario
+    if (input.length() == 0) return;
 
-  char respuesta = Serial.read(); // Leer la respuesta
+    // Variables
+    int mV = -1;
+    bool hayDAC = false;
+    bool haySwitch = false;
+    char comando = '\0';
 
-  if (respuesta == 'a')
-  {
-    digitalWrite(SWITCH_PIN, LOW);
-    Serial.println("Interruptor abierto");
-    float valor_pila = leerVoltajePromediado(15, 150) * 0.97 / 1.01;
+    // Extraer número si lo hay
+    int i = 0;
+    while (i < input.length() && isDigit(input.charAt(i))) i++;
 
-    Serial.println("Valor de la pila: " + String(valor_pila, 2) + " V (" + String(valor_pila * 1000, 2) + " mV)");
+    if (i > 0) {
+      mV = input.substring(0, i).toInt();
+      hayDAC = true;
+    }
 
-    dac_value = (valor_pila - 0.04) * 1000 * 255 / 3300;
-    Serial.println(float(dac_value));
-    dacWrite(DAC1, dac_value);
+    // Extraer comando si lo hay
+    if (i < input.length()) {
+      comando = input.charAt(i);
+      if (comando == 'c' || comando == 'a' || comando == 'l') {
+        haySwitch = true;
+      }
+    }
+
+    // Ejecutar DAC
+    if (hayDAC) {
+      if (mV >= 0 && mV <= 3300) {
+        int valorDAC = round((mV / 3300.0) * 255.0);
+        dacWrite(PIN_DAC, valorDAC);
+
+        float voltajeReal = (valorDAC / 255.0) * 3.3;
+        Serial.print("DAC ajustado a ");
+        Serial.print(mV);
+        Serial.print(" mV → Valor DAC = ");
+        Serial.print(valorDAC);
+        Serial.print(" → Voltaje estimado: ");
+        Serial.print(voltajeReal, 2);
+        Serial.println(" V");
+      } else {
+        Serial.println("Valor DAC fuera de rango (0 - 3300 mV)");
+      }
+    }
+
+    // Ejecutar comando de switch
+    if (haySwitch) {
+      if (comando == 'c') {
+        Serial.println("Switch cerrado");
+        digitalWrite(PIN_SWITCH, HIGH);
+      } else if (comando == 'a') {
+        Serial.println("Switch abierto");
+        digitalWrite(PIN_SWITCH, LOW);
+      } else if (comando == 'l') {
+        Serial.printf("Voltaje en CE: %d mV\n", analogRead(PIN_CE_VOLTAGE) * 3300 / 4095 * 633/502 * 636/646);
+      }
+      
+    }
   }
-  else if (respuesta == 'c')
-  {
-    digitalWrite(SWITCH_PIN, HIGH);
-    Serial.println("DAC fijado");
-    Serial.println("Interruptor cerrado");
-    float valor_salida = leerVoltajePromediado(4, 150);
-    Serial.println("La salida es " + String(valor_salida, 2) + " V (" + String(valor_salida * 1000, 2) + " mV)");
-  }
-  else
-  {
-    Serial.println("Error: Respuesta no válida");
-  }
-
 }

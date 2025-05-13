@@ -2,6 +2,7 @@
 
 #define PIN_DAC DAC1
 #define PIN_SWITCH 21
+#define PIN_CE_VOLTAGE 33
 
 void setup() {
   Serial.begin(115200);
@@ -35,7 +36,7 @@ void loop() {
     // Extraer comando si lo hay
     if (i < input.length()) {
       comando = input.charAt(i);
-      if (comando == 'c' || comando == 'a') {
+      if (comando == 'c' || comando == 'a' || comando == 'l') {
         haySwitch = true;
       }
     }
@@ -67,7 +68,10 @@ void loop() {
       } else if (comando == 'a') {
         Serial.println("Switch abierto");
         digitalWrite(PIN_SWITCH, LOW);
+      } else if (comando == 'l') {
+        Serial.printf("Voltaje en CE: %d mV\n", analogRead(PIN_CE_VOLTAGE) * 3300 / 4095);
       }
+      
     }
   }
 }

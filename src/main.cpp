@@ -78,7 +78,6 @@ void loop(void) {
     // === Handle 'c': Activate switch and measure output voltage on GPIO33 ===
     if (mensaje == 'c') {
       digitalWrite(PIN_SWITCH, HIGH);  // Activate switch/output
-
       for (int i = 0; i < NO_OF_SAMPLES; i++) {
         raw2 = adc1_get_raw(ADC1_CHANNEL_5);  // Read raw ADC value from GPIO33
         voltage_2 = esp_adc_cal_raw_to_voltage(raw2, &adc_chars);  // Convert to mV
@@ -88,6 +87,28 @@ void loop(void) {
 
       float average_out = sum_voltage_out / (float)NO_OF_SAMPLES;
       Serial.printf("Measured output voltage (GPIO33): %.2f mV\n", average_out);
+    }
+    if (mensaje == 'r') {
+      digitalWrite(PIN_SWITCH, HIGH);  // Activate switch/output
+      for (int i = 0; i < 60; i++) {
+        float average_out = 0;
+        sum_voltage_out = 0;
+        for (int i = 0; i < 50; i++) {
+          raw2 = adc1_get_raw(ADC1_CHANNEL_5);  // Read raw ADC value from GPIO33
+          voltage_2 = esp_adc_cal_raw_to_voltage(raw2, &adc_chars);  // Convert to mV
+          sum_voltage_out += voltage_2;
+          delay(10);
+        }
+
+        average_out = sum_voltage_out / (float)NO_OF_SAMPLES;
+        Serial.printf("Measured output voltage (GPIO33): %.2f mV\n", average_out);
+        delay(10);
+      }
+
+
+
+      
+
     }
   }
 }
